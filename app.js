@@ -14,17 +14,13 @@ app.get('/', (req, res) => {
 
 app.get('/api/books', async (req, res) => {
     try {
-        const amount = 5;
-        // req.query.amount;
+        const amount = req.query.amount;
 
         let rawData = await fetch(`https://www.googleapis.com/books/v1/volumes?q=*&printType=books&maxResult=${amount}`);
         let googleApiBooks = await rawData.json();
         let books = [];
         googleApiBooks.items.forEach(element => {
             const imgLinks = element.volumeInfo.imageLinks;
-            // let imgUrl = '';
-            // if(imgLinks)
-            //     imgUrl = imgLinks.thumbnail;
             
             books.push({
                 id: element.id,
@@ -59,9 +55,6 @@ app.get('/api/books/:id', async (req, res) => {
     }
 });
 
-app.post('/api/newbook', (req, res) => {
-    
-})
 
 const listener = app.listen(process.env.PORT, () => {
     console.log(`Server listening on port ${process.env.PORT}`);
