@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import BookDto from "../dtos/bookDto.js";
+import BookDto from "../dtos/BookDto.js";
 
 class BookService{
     async getBooks(amount){
