@@ -1,6 +1,3 @@
-import fetch from "node-fetch";
-import BookDto from "../dtos/BookDto.js";
-import mongoose from "mongoose";
 import BookModel from "../models/BookModel.js"
 
 class BookService{

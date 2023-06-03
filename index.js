@@ -5,6 +5,8 @@ dotenv.config();
 import bookRouter from "./routers/bookRouter.js";
 import cors from 'cors'
 import mongoose from "mongoose";
+import authRouter from "./routers/authRouter.js";
+import cookieParser from "cookie-parser";
 
 const app = Express();
 
@@ -14,7 +16,9 @@ app.use(cors({
     credentials: true,
     origin: process.env.CLIENT_URL
 }))
+app.use(cookieParser());
 app.use('/api', bookRouter);
+app.use('/auth', authRouter);
 
 const start = async () => {
     try {
