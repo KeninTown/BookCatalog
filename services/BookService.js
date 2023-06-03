@@ -1,16 +1,12 @@
 import fetch from "node-fetch";
 import BookDto from "../dtos/BookDto.js";
+import mongoose from "mongoose";
+import BookModel from "../models/BookModel.js"
 
 class BookService{
     async getBooks(amount){
         try {    
-            const rawData = await fetch(`https://www.googleapis.com/books/v1/volumes?q=*&printType=books&maxResults=${amount}`);
-            const rawBooks = await rawData.json();
-            let books = [];
-            rawBooks.items.forEach(book => {
-                const bookDto = new BookDto(book);
-                books.push({...bookDto});
-            });  
+            const books = await BookModel.find().limit(amount).select('-__v');
             return books;
         } catch (error) {
             console.log(error);
@@ -19,11 +15,8 @@ class BookService{
 
     async getOne(id){
         try {
-            const rawData = await fetch(`https://www.googleapis.com/books/v1/volumes/${id}`);
-            const bookInfo = await rawData.json();
-            
-            const bookDto = new BookDto(bookInfo);
-            return bookDto;    
+            const book = await BookModel.findById(id).select('-__v');
+            return book;  
         } catch (error) {
             console.log(error);
         }

@@ -1,16 +1,24 @@
 class BookDto{
-    id;
-    authors;
     title;
-    img;
+    authors;
     genre;
+    description;
+    publisher;
+    publishedDate;
+    pageCount;
+    maturityRating;
+    img;
     
     constructor(book){
-        this.id = book.id;
-        this.authors = book.volumeInfo.authors;
         this.title = book.volumeInfo.title;
-        this.img = book.volumeInfo.imageLinks;
+        this.authors = book.volumeInfo.authors;
         this.genre = book.volumeInfo.categories;
+        this.description = book.volumeInfo.description;
+        this.publisher = book.volumeInfo.publisher;
+        this.publishedDate = book.volumeInfo.publishedDate;
+        this.pageCount = book.volumeInfo.pageCount;
+        this.maturityRating = book.volumeInfo.maturityRating;
+        this.img = book.volumeInfo.imageLinks;
     }
 }
 
