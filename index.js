@@ -7,6 +7,8 @@ import cors from 'cors'
 import mongoose from "mongoose";
 import authRouter from "./routers/authRouter.js";
 import cookieParser from "cookie-parser";
+import errorMIddleware from "./middleware/errorMIddleware.js";
+
 
 const app = Express();
 
@@ -19,6 +21,8 @@ app.use(cors({
 app.use(cookieParser());
 app.use('/api', bookRouter);
 app.use('/auth', authRouter);
+app.use(errorMIddleware);
+
 
 const start = async () => {
     try {
