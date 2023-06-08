@@ -10,58 +10,46 @@ import MailService from './mailService.js';
 
 class AuthService{
     async registration(email, username, password){
-        try {
-            const isExist = await UserModel.findOne({email});
-            if(isExist)
-                throw ApiError.BadRequest('User with this email is already exist');
-            
-            const hashedPassword = await bcrypt.hash(password, 7);
-            const activationLink = uuidv4();
+        const isExist = await UserModel.findOne({email});
+        if(isExist)
+            throw ApiError.BadRequest('User with this email is already exist');
+        
+        const hashedPassword = await bcrypt.hash(password, 7);
+        const activationLink = uuidv4();
 
-            const user = await UserModel.create({email, username, password:hashedPassword, activationLink});
+        const user = await UserModel.create({email, username, password:hashedPassword, activationLink});
 
-            await MailService.sendActivateMail(user.email, `${process.env.API_URL}/auth/activate/${activationLink}`);
-            
-            const userDto = new UserDto(user);
-            const tokens = TokenService.generateToken({...userDto});
+        await MailService.sendActivateMail(user.email, `${process.env.API_URL}/auth/activate/${activationLink}`);
+        
+        const userDto = new UserDto(user);
+        const tokens = TokenService.generateToken({...userDto});
 
-            await TokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
-           
-            return {...tokens, user: userDto};
-        } catch (error) {
-            console.log(error);
-        }
+        await TokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
+        
+        return {...tokens, user: userDto};
     }
 
     async login(email, password){
-        try {
-            const user = await UserModel.findOne({email});
+        const user = await UserModel.findOne({email});
 
-            if(!user)
-                throw ApiError.BadRequest('Invalid email');
-            
-            const isPasswordMacth = await bcrypt.compare(password, user.password);
+        if(!user)
+            throw ApiError.BadRequest('Invalid email');
+        
+        const isPasswordMacth = await bcrypt.compare(password, user.password);
 
-            if(!isPasswordMacth)
-                throw ApiError.BadRequest('Invalid password');
+        if(!isPasswordMacth)
+            throw ApiError.BadRequest('Invalid password');
 
-            const userDto = new UserDto(user);
-            const tokens = TokenService.generateToken({...userDto});
-            await TokenService.saveRefreshToken(user._id, tokens.refreshToken);
+        const userDto = new UserDto(user);
+        const tokens = TokenService.generateToken({...userDto});
+        await TokenService.saveRefreshToken(user._id, tokens.refreshToken);
 
-            return {...tokens, user: userDto};
-        } catch (error) {
-            console.log(error);
-        }
+        return {...tokens, user: userDto};
     }
 
     async logout(refreshToken){
-        try {
-            const data = await TokenService.removeToken(refreshToken);
-            return data;
-        } catch (error) {
-            console.log(error);
-        }
+        const data = await TokenService.removeToken(refreshToken);
+        return data;
     }
 
     async refresh(refreshToken){
@@ -89,15 +77,11 @@ class AuthService{
     }
 
     async activate(link){
-        try {
-            const user = await UserModel.findOne({activationLink: link});
-            if(!user)
-                throw ApiError.BadRequest('Wrong activation link');
-            user.isActivated = true;
-            await user.save();
-        } catch (error) {
-            
-        }
+        const user = await UserModel.findOne({activationLink: link});
+        if(!user)
+            throw ApiError.BadRequest('Wrong activation link');
+        user.isActivated = true;
+        await user.save();
     }
 }
 

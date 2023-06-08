@@ -1,14 +1,20 @@
+import ApiError from "../exeptions/ApiError.js";
 import AuthService from "../services/AuthService.js";
+import {validationResult} from 'express-validator'
 
 class AuthController{
     async registration(req, res, next){
         try {
+            const validResult = validationResult(req);
+            if(!validResult.isEmpty())
+                throw ApiError.BadRequest('Validation error', validResult.array())
+            
             const {email, username, password} = req.body;
             const userInfo = await AuthService.registration(email, username, password);
             res.cookie('refreshToken', userInfo.refreshToken, {maxAge:900000, httpOnly:true});
             res.json(userInfo);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 
@@ -18,7 +24,7 @@ class AuthController{
             const userData = await AuthService.login(email, password);
             res.json(userData);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 
@@ -28,7 +34,7 @@ class AuthController{
             const data = await AuthService.logout(refreshToken);
             res.json(data);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 
@@ -39,7 +45,7 @@ class AuthController{
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 9000000,httpOnly: true});
             res.json(userData); 
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 
@@ -49,7 +55,7 @@ class AuthController{
             await AuthService.activate(activationLink);
             res.redirect('https://ya.ru/');
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 }

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 const bookSchema = new mongoose.Schema({
+   // bookIndex: {type: Number},
    title:{type:String, required:true},
    authors:{type:[String], required:true},
    genre:{type:[String]},
@@ -11,5 +13,7 @@ const bookSchema = new mongoose.Schema({
    maturityRating:{type:String},
    img:{type:{}}
 });
+
+bookSchema.plugin(paginate);
 
 export default mongoose.model('BookModel', bookSchema);
