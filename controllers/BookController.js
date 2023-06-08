@@ -1,4 +1,4 @@
-import BookService from "../services/bookService.js"
+import BookService from "../services/BookService.js"
 
 class BookController{
     async getBooks(req, res, next){
