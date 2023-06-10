@@ -1,0 +1,3 @@
+.filterContainer {
+    @apply w-[510px] h-[1060px] border-[2px] border-[#160F2980] p-[30px]
+}

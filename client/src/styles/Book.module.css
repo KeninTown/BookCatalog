@@ -1,0 +1,27 @@
+.bookContainer {
+    @apply w-[222px] h-[500px] text-[20px] font-sans flex flex-col relative
+}
+
+.image {
+    @apply w-[222px] h-[340px]
+}
+
+.imageContainer {
+    @apply mb-[20px]
+}
+
+.titleContainer {
+    @apply mb-[10px] whitespace-nowrap overflow-hidden text-ellipsis
+}
+
+.authorContainer {
+    @apply text-[#00000080]
+}
+
+.bookButton {
+    @apply uppercase font-[600] mt-[15px] border-[2px] border-[#160F2980] px-[43px] py-[10px] text-[16px]
+}
+
+.bookButtonContainer {
+    @apply flex justify-center absolute bottom-0
+}

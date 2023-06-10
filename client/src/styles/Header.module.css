@@ -1,0 +1,39 @@
+.siteHeaderContainer {
+    @apply px-[42px] py-[20px];
+}
+
+.siteHeader {
+    @apply flex items-center justify-between mb-[30px]
+}
+
+.aboutCompany {
+    @apply flex items-center space-x-[30px]
+}
+
+.logoCompanyImage {
+    @apply w-[70px] h-[70px]
+}
+
+.nameCompany {
+    @apply uppercase font-sans font-[650] text-[40px]
+}
+
+.nav {
+    @apply flex space-x-[30px]
+}
+
+.item {
+    @apply font-sans text-[20px]
+}
+
+.search {
+    @apply py-[9px] px-[12px] border-[2px] border-gray-500 text-[20px] w-[440px] z-0 relative
+}
+
+.searchButton {
+    @apply absolute z-10 top-[48px] right-[408px]
+}
+
+hr {
+    @apply border-[2px] border-[#160F2980]
+}

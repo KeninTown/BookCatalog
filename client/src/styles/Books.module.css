@@ -1,0 +1,3 @@
+.booksContainer {
+    @apply w-[100%] flex flex-wrap gap-x-[62px] gap-y-[30px]
+}

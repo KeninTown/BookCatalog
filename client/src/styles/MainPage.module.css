@@ -1,0 +1,7 @@
+.siteContainer {
+    @apply flex px-[42px] space-x-[62px] mt-[30px]
+}
+
+.mainPage {
+    @apply w-[1600px] m-auto bg-white
+}

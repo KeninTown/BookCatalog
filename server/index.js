@@ -2,10 +2,9 @@ import Express from "express";
 import bodyParser from "body-parser";
 import dotenv from 'dotenv';
 dotenv.config();
-import bookRouter from "./routers/bookRouter.js";
+import router from './routers/index.js';
 import cors from 'cors'
 import mongoose from "mongoose";
-import authRouter from "./routers/authRouter.js";
 import cookieParser from "cookie-parser";
 import errorMIddleware from "./middleware/errorMIddleware.js";
 
@@ -19,8 +18,7 @@ app.use(cors({
     origin: process.env.CLIENT_URL
 }))
 app.use(cookieParser());
-app.use('/api', bookRouter);
-app.use('/auth', authRouter);
+app.use('/api', router);
 app.use(errorMIddleware);
 
 
