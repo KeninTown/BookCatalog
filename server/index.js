@@ -6,8 +6,9 @@ import router from './routers/index.js';
 import cors from 'cors'
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import errorMIddleware from "./middleware/errorMIddleware.js";
+import errorMiddleware from "./middleware/errorMiddleware.js";
 
+import BookModel from "./models/BookModel.js";
 
 const app = Express();
 
@@ -19,7 +20,22 @@ app.use(cors({
 }))
 app.use(cookieParser());
 app.use('/api', router);
-app.use(errorMIddleware);
+app.use(errorMiddleware);
+
+app.get('/api', async (req, res) =>{
+    try {
+        const publisher = await BookModel.find().select('publisher').sort({publisher: 1});
+        let clearPublisher = []
+        publisher.forEach(element => {
+            if(clearPublisher.indexOf(element.publisher) === -1)
+                clearPublisher.push(element.publisher)
+        })
+        res.send(clearPublisher);
+    } catch (error) {
+     console.log(error);   
+    }
+}
+);
 
 
 const start = async () => {

@@ -8,4 +8,4 @@ const userSchema = new mongoose.Schema({
     activationLink:{type:String}
 });
 
-export default mongoose.model('UserModel', userSchema);
+export default mongoose.model('User', userSchema);

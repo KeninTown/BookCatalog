@@ -3,13 +3,12 @@ import BookService from "../services/BookService.js"
 class BookController{
     async getBooks(req, res, next){
         try {
-            const {limit, page} = req.query;
-            const books = await BookService.getBooks(limit, page);
+            const {limit, page, genre} = req.query;
+            const books = await BookService.getBooks(limit, page, genre);
             res.json(books);
         } catch (error) {
             next(error);
         }
-        
     }
 
     async getOneBook(req, res, next){
@@ -19,17 +18,6 @@ class BookController{
             res.json(book);
         } catch (error) {
             next(error);
-        }
-    }
-
-    async createComment(req, res, next){
-        try {
-            const bookId = req.params.id;
-            const {title, text, username} = req.body;
-            await BookService.createComment(bookId, username, title, text);
-            res.status(200).end();
-        } catch (error) {
-            next(error)
         }
     }
 }
