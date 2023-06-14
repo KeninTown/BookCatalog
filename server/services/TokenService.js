@@ -1,10 +1,12 @@
 import TokenModel from "../models/TokenModel.js";
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv'
+dotenv.config();
 
 class TokenService{
     generateToken(payload){
-        const accessToken = jwt.sign(payload, process.env.JWT_ACCES_SECRET, {expiresIn:'15s'});
-        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {expiresIn:'30s'});
+        const accessToken = jwt.sign(payload, process.env.JWT_ACCES_SECRET, {expiresIn:'3h'});
+        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {expiresIn:'30m'});
 
         return {accessToken, refreshToken};
     }
@@ -28,7 +30,7 @@ class TokenService{
     }
 
     validateAccessToken(accessToken){
-        const data = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
+        const data = jwt.verify(accessToken, process.env.JWT_ACCES_SECRET);
         return data;
     }
 }

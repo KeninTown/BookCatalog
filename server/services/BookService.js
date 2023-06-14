@@ -4,38 +4,42 @@ import UserModel from "../models/UserModel.js";
 import CommentService from "./CommentService.js";
 
 class BookService{
-    async getBooks(limit, page, genre){ 
+    constructor(){
+        this.selectParams = '_id authors img description publisher pageCount title';
+    }
+
+    async getBooks(limit, page, genres){ 
         const limitNumber = parseInt(limit, 10) || 10;
         const pageNumber = parseInt(page, 10) || 1;
-        let books;
-        if(genre)
-        {
-            books = await BookModel.paginate({
-                genre
-            }, {
-                page:pageNumber, 
-                limit:limitNumber, 
-                select: '-__v',
-                customLabels:{docs:'books'}});
-        }
-        else{
-            books = await BookModel.paginate({}, {
-                page:pageNumber, 
-                limit:limitNumber, 
-                select: '-__v',
-                customLabels:{docs:'books'}});
-        }
+        const genresArr = genres?.split('-') || [];
+        
+        const books = await BookModel.paginate({
+            genres: {$in: genresArr}
+        }, {
+            page:pageNumber, 
+            limit:limitNumber, 
+            select: this.selectParams,
+            customLabels:{docs:'books'}});
+    
         return books;
     }
 
-    async getOne(id){
-        const book = await BookModel.findById(id).select('-__v');
+    async getOne(bookId){
+        const book = await BookModel.findById(bookId).select('-__v');
         if(!book)
             throw ApiError.BadRequest('No book with such id');
 
         const comments = await CommentService.findBookComments(book._id);
-    
+        
         return {...book._doc, comments};  
+    }
+
+    async getFavoriteBook(bookId){
+        const book = await BookModel.findById(bookId).select(this.selectParams);
+        if(!book)
+            throw ApiError.BadRequest('No book with such id');
+        
+        return {...book._doc};
     }
 
     async createComment(bookId, username, title, text){
