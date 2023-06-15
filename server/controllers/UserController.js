@@ -1,4 +1,5 @@
 import ApiError from "../exeptions/ApiError.js";
+import AuthService from "../services/AuthService.js";
 import UserService from "../services/UserService.js";
 
 class UserController{
@@ -16,11 +17,13 @@ class UserController{
         try {
             const {username, id} = req.user;
             const newUsername = req.body.username;
-
+            const {refreshToken} = req.cookies
             if(newUsername === username)
                 return next(ApiError.BadRequest('It is already your loggin'));
 
-            const userInfo = await UserService.changeUsername(newUsername, id);
+            await UserService.changeUsername(newUsername, id);
+
+            const userInfo = await AuthService.refresh(refreshToken); 
             res.cookie('refreshToken', userInfo.refreshToken, {maxAge:900000, httpOnly:true})
 
             res.status(200).json(userInfo);

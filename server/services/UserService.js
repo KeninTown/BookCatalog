@@ -11,6 +11,7 @@ class UserService{
     }
 
     async changeUsername(username, userId){
+
         const user = await UserModel.findById(userId);
         console.log(user);
 
@@ -24,13 +25,6 @@ class UserService{
         user.username = username;
 
         await user.save();
-
-        const userDto = new UserDto(user);
-        const tokens = TokenService.generateToken({...userDto});
-
-        await TokenService.saveRefreshToken(tokens.refreshToken);
-        
-        return {...tokens, user: userDto};
     }
 
     async changePassword(){

@@ -6,13 +6,13 @@ import CommentService from "./CommentService.js";
 class BookService{
     constructor(){
         this.selectParams = '_id authors img description publisher pageCount title';
+        this.allGenres = ['Фэнтези', 'Зарубежная классика', 'Классика', 'Fiction', 'Non-fiction', 'Роман', 'Трагедия', 'Приключения', 'Биография', 'Детектив', 'Научная фантастика', 'Повесть', 'Проза', 'Поэзия', 'Рассказ']
     }
 
     async getBooks(limit, page, genres){ 
         const limitNumber = parseInt(limit, 10) || 10;
         const pageNumber = parseInt(page, 10) || 1;
-        const genresArr = genres?.split('-') || [];
-        
+        const genresArr = genres?.split('-') || this.allGenres;
         const books = await BookModel.paginate({
             genres: {$in: genresArr}
         }, {
