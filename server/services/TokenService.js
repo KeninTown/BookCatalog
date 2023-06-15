@@ -33,6 +33,10 @@ class TokenService{
         const data = jwt.verify(accessToken, process.env.JWT_ACCES_SECRET);
         return data;
     }
+
+    async refresh(refreshToken){
+        
+    }
 }
 
 export default new TokenService();
