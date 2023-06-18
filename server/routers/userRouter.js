@@ -1,14 +1,19 @@
 import { Router } from "express";
 import UserController from "../controllers/UserController.js";
 import authMiddleware from '../middleware/authMiddleware.js';
+import {body} from 'express-validator';
+import CommentController from "../controllers/CommentController.js";
 
 const router = new Router();
 
-router.use('/', authMiddleware);
+router.get('/:id', UserController.getUser)
 
-router.put('/:id/email', UserController.changeEmail);
+router.use('/:id', authMiddleware);
+router.get('/:id/comments', CommentController.getByUserId);
+router.put('/:id/email', body('email').isEmail(), UserController.changeEmail);
 router.put('/:id/username', UserController.changeUsename);
-router.put('/:id/password', UserController.changePassword);
+router.post('/:id/checkpassword', UserController.checkPassword);
+router.put('/:id/password', body('password').isLength({min:6, max: 32}), UserController.changePassword);
 router.post('/:id/favoritebooks', UserController.chooseFavoriteBook);
 router.get('/:id/favoritebooks', UserController.getFavoriteBook);
 router.delete('/:id/favoritebooks', UserController.deleteFavoriteBook);

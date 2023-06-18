@@ -6,16 +6,19 @@ import CommentService from "./CommentService.js";
 class BookService{
     constructor(){
         this.selectParams = '_id authors img description publisher pageCount title';
-        this.allGenres = ['Фэнтези', 'Зарубежная классика', 'Классика', 'Fiction', 'Non-fiction', 'Роман', 'Трагедия', 'Приключения', 'Биография', 'Детектив', 'Научная фантастика', 'Повесть', 'Проза', 'Поэзия', 'Рассказ']
     }
 
-    async getBooks(limit, page, genres){ 
+    async getBooks(limit, page, genres, author){ 
         const limitNumber = parseInt(limit, 10) || 10;
         const pageNumber = parseInt(page, 10) || 1;
-        const genresArr = genres?.split('-') || this.allGenres;
-        const books = await BookModel.paginate({
-            genres: {$in: genresArr}
-        }, {
+        const genresArr = genres?.split('-') ;
+        const authorsArr = author?.split('-');
+        // let query = {};
+        // if(genresArr && authorsArr)
+        //     query = {$and: [{genres:{$in:genresArr}}, {authors:{$in:authorsArr}}]};
+        
+        const query = genresArr ? {genres:{$in: genresArr}} : {};
+        const books = await BookModel.paginate(query, {
             page:pageNumber, 
             limit:limitNumber, 
             select: this.selectParams,
@@ -28,10 +31,8 @@ class BookService{
         const book = await BookModel.findById(bookId).select('-__v');
         if(!book)
             throw ApiError.BadRequest('No book with such id');
-
-        const comments = await CommentService.findBookComments(book._id);
         
-        return {...book._doc, comments};  
+        return {...book._doc};  
     }
 
     async getFavoriteBook(bookId){
@@ -40,16 +41,6 @@ class BookService{
             throw ApiError.BadRequest('No book with such id');
         
         return {...book._doc};
-    }
-
-    async createComment(bookId, username, title, text){
-        const book = await BookModel.findById(bookId);
-        const user = await UserModel.findOne({username});
-        
-        if(!book || !user)
-            throw ApiError.BadRequest('Invalid username or bookId');
-        
-        await CommentService.create(user._id, book._id, title, text);
     }
 }
 

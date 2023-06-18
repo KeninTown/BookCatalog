@@ -1,13 +1,38 @@
 import ApiError from "../exeptions/ApiError.js";
 import AuthService from "../services/AuthService.js";
 import UserService from "../services/UserService.js";
+import {validationResult} from 'express-validator'
 
 class UserController{
+    async getUser(req, res, next){
+        try {
+            const id = req.params.id;
+            const userData = await UserService.getUser(id);
+            res.status(200).json(userData);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async changeEmail(req, res, next){
         try {
-            const {email} = req.body;
+            const validResult = validationResult(req);
+            if(!validResult.isEmpty())
+                throw ApiError.BadRequest('Validation error', validResult.array())
 
-            res.status(200).end()
+            const NewEmail = req.body.email;
+            const {id, email} = req.user;
+            console.log(id);
+            if(NewEmail === email)
+                return next(ApiError.BadRequest('It is already youre email'))
+
+            const {refreshToken} = req.cookies
+
+            await UserService.changeEmail(NewEmail, id);
+
+            const userInfo = await AuthService.refresh(refreshToken);
+
+            res.status(200).json(userInfo)
         } catch (error) {
             next(error)
         }
@@ -16,17 +41,25 @@ class UserController{
     async changeUsename(req, res, next){
         try {
             const {username, id} = req.user;
+            console.log('req.user', req.user);
             const newUsername = req.body.username;
-            const {refreshToken} = req.cookies
             if(newUsername === username)
                 return next(ApiError.BadRequest('It is already your loggin'));
 
             await UserService.changeUsername(newUsername, id);
 
-            const userInfo = await AuthService.refresh(refreshToken); 
-            res.cookie('refreshToken', userInfo.refreshToken, {maxAge:900000, httpOnly:true})
+            res.sendStatus(200);
+        } catch (error) {
+            next(error)
+        }
+    }
 
-            res.status(200).json(userInfo);
+    async checkPassword(req, res, next){
+        try {
+            const {id} = req.user;
+            const {password} = req.body;
+            await UserService.checkPassword(password, id);
+            res.sendStatus(200);
         } catch (error) {
             next(error)
         }
@@ -34,7 +67,16 @@ class UserController{
 
     async changePassword(req, res, next){
         try {
-            
+            const validResult = validationResult(req);
+            if(!validResult.isEmpty())
+                throw ApiError.BadRequest('Validation error', validResult.array())
+
+            const {id} = req.user;
+            const {password} = req.body;
+
+            await UserService.changePassword(password, id);
+
+            res.sendStatus(200);
         } catch (error) {
             next(error)
         }
@@ -42,10 +84,10 @@ class UserController{
 
     async chooseFavoriteBook(req, res, next){
         try {
-            const userId = req.params.id;
+            const userId = req.user.id;
             const {bookId} = req.query;
             await UserService.chooseFavoriteBook(bookId, userId);
-            res.status(201).end();
+            res.sendStatus(201);
         } catch (error) {
             next(error)
         }
@@ -53,7 +95,7 @@ class UserController{
 
     async getFavoriteBook(req, res, next){
         try {
-            const userId = req.params.id;
+            const userId = req.user.id;
             const favoriteBooks = await UserService.getFavoriteBook(userId);
             res.status(200).json(favoriteBooks);
         } catch (error) {
@@ -65,7 +107,7 @@ class UserController{
         try {
             const {userId, bookId} = req.body;
             await UserService.deleteFavoriteBook(bookId, userId);
-            res.status(204).end();
+            res.sendStatus(204);
         } catch (error) {
             next(error)
         }

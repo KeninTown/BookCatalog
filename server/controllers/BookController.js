@@ -3,8 +3,8 @@ import BookService from "../services/BookService.js"
 class BookController{
     async getBooks(req, res, next){
         try {
-            const {limit, page, genre} = req.query;
-            const books = await BookService.getBooks(limit, page, genre);
+            const {limit, page, genre, author} = req.query;
+            const books = await BookService.getBooks(limit, page, genre, author);
             res.json(books);
         } catch (error) {
             next(error);

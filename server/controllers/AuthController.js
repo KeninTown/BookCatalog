@@ -10,9 +10,9 @@ class AuthController{
                 throw ApiError.BadRequest('Validation error', validResult.array())
             
             const {email, username, password} = req.body;
-            const userInfo = await AuthService.registration(email, username, password);
-            res.cookie('refreshToken', userInfo.refreshToken, {maxAge:900000, httpOnly:true});
-            res.json(userInfo);
+            const userData = await AuthService.registration(email, username, password);
+            res.cookie('refreshToken', userData.refreshToken, {maxAge:900000, httpOnly:true});
+            res.json(userData);
         } catch (error) {
             next(error);
         }
@@ -22,6 +22,7 @@ class AuthController{
         try {
             const {email, password} = req.body;
             const userData = await AuthService.login(email, password);
+            res.cookie('refreshToken', userData.refreshToken, {maxAge:900000, httpOnly:true});
             res.json(userData);
         } catch (error) {
             next(error);

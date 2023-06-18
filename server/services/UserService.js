@@ -2,18 +2,36 @@ import ApiError from "../exeptions/ApiError.js";
 import FavoriteBookModel from "../models/FavoriteBookModel.js";
 import BookService from "./BookService.js";
 import UserModel from "../models/UserModel.js";
-import TokenService from "./TokenService.js";
-import UserDto from "../dtos/UserDto.js";
+import bcrypt from 'bcrypt';
 
 class UserService{
-    async changeEmail(){
+    async getUser(id){ 
+        const user = await UserModel.findById(id).select('-__v');
 
+        if(!user)
+            throw ApiError.BadRequest('No user with such id');
+        
+        return user;
+    }
+
+    async changeEmail(email, userId){
+        const user = await UserModel.findById(userId);
+
+        if(!user)
+            throw ApiError.BadRequest('No user with such id');
+        
+        const existUser = await UserModel.findOne({email});
+        if(existUser)
+            throw ApiError.BadRequest('Email already taken');
+
+        user.email = email;
+
+        await user.save();
     }
 
     async changeUsername(username, userId){
 
         const user = await UserModel.findById(userId);
-        console.log(user);
 
         if(!user)
             throw ApiError.BadRequest('No user with such id');
@@ -27,8 +45,25 @@ class UserService{
         await user.save();
     }
 
-    async changePassword(){
+    async changePassword(password, id){
+        const user = await UserModel.findById(id);
+        if(!user)
+            throw ApiError.BadRequest('No user with such id')
+
+        const hashedPassword = await bcrypt.hash(password, 7);
+        user.password = hashedPassword;
+        await user.save();
+    }
+
+    async checkPassword(password, id){
+        const user = await UserModel.findById(id);
+        if(!user)
+            throw ApiError.BadRequest('No user with such id')
         
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+        if(!isPasswordMatch)
+            throw ApiError.BadRequest('Invalid password');
     }
 
     async chooseFavoriteBook(bookId, userId){

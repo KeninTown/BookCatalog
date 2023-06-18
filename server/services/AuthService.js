@@ -53,27 +53,24 @@ class AuthService{
     }
 
     async refresh(refreshToken){
-        try {
-            if(!refreshToken)
-                throw ApiError.Unauthorized();
+       
+        if(!refreshToken)
+            throw ApiError.Unauthorized();
 
-            const tokenData = TokenService.validateRefreshToken(refreshToken);
-            const tokenDB = TokenModel.findOne({refreshToken});
+        const tokenData = TokenService.validateRefreshToken(refreshToken);
+        const tokenDB = TokenModel.findOne({refreshToken});
 
-            if(!tokenData || !tokenDB)
-                throw ApiError.Unauthorized();
+        if(!tokenData || !tokenDB)
+            throw ApiError.Unauthorized();
 
-            const user = await UserModel.findById(tokenData.id);
+        const user = await UserModel.findById(tokenData.id);
 
-            const userDto = new UserDto(user);
-            const tokens = TokenService.generateToken(...userDto);
+        const userDto = new UserDto(user);
+        const tokens = TokenService.generateToken({...userDto});
 
-            await TokenService.saveRefreshToken(tokens.refreshToken);
+        await TokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
 
-            return {...tokens, user:userDto}    
-        } catch (error) {
-            console.log(error);
-        }
+        return {...tokens, user:userDto}    
     }
 
     async activate(link){
