@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema({
     username:{type:String, required: true, unique: true},
     password: {type: String, required: true},
     isActivated:{type:Boolean, default:false},
-    activationLink:{type:String}
+    activationLink:{type:String},
+    logo:{type: String, default: 'default.jpg'}
 });
 
 export default mongoose.model('User', userSchema);

@@ -1,7 +1,5 @@
 import ApiError from "../exeptions/ApiError.js";
-import BookModel from "../models/BookModel.js"
-import UserModel from "../models/UserModel.js";
-import CommentService from "./CommentService.js";
+import BookModel from "../models/BookModel.js";
 
 class BookService{
     constructor(){
@@ -11,13 +9,15 @@ class BookService{
     async getBooks(limit, page, genres, author){ 
         const limitNumber = parseInt(limit, 10) || 10;
         const pageNumber = parseInt(page, 10) || 1;
-        const genresArr = genres?.split('-') ;
+
+        const genresArr = genres?.split('-');
         const authorsArr = author?.split('-');
-        // let query = {};
-        // if(genresArr && authorsArr)
-        //     query = {$and: [{genres:{$in:genresArr}}, {authors:{$in:authorsArr}}]};
         
-        const query = genresArr ? {genres:{$in: genresArr}} : {};
+        const genreQuery = genresArr ? {genres:{$in: genresArr}} : {};
+        const authorQuery = authorsArr ? {authors:{$in: authorsArr}} : {};
+
+        const query = {$and: [genreQuery, authorQuery]};
+        
         const books = await BookModel.paginate(query, {
             page:pageNumber, 
             limit:limitNumber, 

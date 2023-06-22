@@ -14,6 +14,31 @@ class UserController{
         }
     }
 
+    async getLogo(req, res, next){
+        try {
+            const id = req.params.id;
+
+            const logoStream = await UserService.getLogo(id);
+            res.setHeader('Content-disposition', 'attachment; filename=' + 'logo.jpg');
+            res.setHeader('Content-type', 'application/octet-stream');
+            logoStream.pipe(res);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async uploadLogo(req, res, next){
+        try {
+            const id = req.params.id;
+            const file = req.file;
+            await UserService.uploadLogo(id, file);
+            
+            res.sendStatus(200);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async changeEmail(req, res, next){
         try {
             const validResult = validationResult(req);

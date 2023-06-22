@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 class MailService{
+    //создание транспорта для отправки сообщений
     constructor(){
         this.transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
@@ -17,6 +18,7 @@ class MailService{
         })
     }
 
+    //отправка письма с ссылкой активации
     async sendActivateMail(to, link){
         let mail = fs.readFileSync(path.resolve('static', 'activateAccountMessage.html'), 'utf-8');
 

@@ -9,6 +9,8 @@ import MailService from './mailService.js';
 
 
 class AuthService{
+
+    //регистрация пользователя
     async registration(email, username, password){
         const isExist = await UserModel.findOne({email});
         if(isExist)
@@ -29,6 +31,7 @@ class AuthService{
         return {...tokens, user: userDto};
     }
 
+    //вход пользователя в аккаунт
     async login(email, password){
         const user = await UserModel.findOne({email});
 
@@ -47,11 +50,13 @@ class AuthService{
         return {...tokens, user: userDto};
     }
 
+    //выход из аккаунта
     async logout(refreshToken){
         const data = await TokenService.removeToken(refreshToken);
         return data;
     }
 
+    //обновление refreshTokenа
     async refresh(refreshToken){
        
         if(!refreshToken)
@@ -73,6 +78,7 @@ class AuthService{
         return {...tokens, user:userDto}    
     }
 
+    //активация аккаунта через письмо на почту
     async activate(link){
         const user = await UserModel.findOne({activationLink: link});
         if(!user)

@@ -2,13 +2,20 @@ import { Router } from "express";
 import UserController from "../controllers/UserController.js";
 import authMiddleware from '../middleware/authMiddleware.js';
 import {body} from 'express-validator';
+import multer from "multer";
 import CommentController from "../controllers/CommentController.js";
+
+const upload = multer();
 
 const router = new Router();
 
 router.get('/:id', UserController.getUser)
 
 router.use('/:id', authMiddleware);
+
+router.get('/:id/logo', UserController.getLogo);
+router.put('/:id/logo', upload.single('logo'), UserController.uploadLogo);
+
 router.get('/:id/comments', CommentController.getByUserId);
 router.put('/:id/email', body('email').isEmail(), UserController.changeEmail);
 router.put('/:id/username', UserController.changeUsename);

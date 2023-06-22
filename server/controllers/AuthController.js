@@ -1,6 +1,7 @@
 import ApiError from "../exeptions/ApiError.js";
 import AuthService from "../services/AuthService.js";
 import {validationResult} from 'express-validator'
+import DropBoxV2Service from "../services/DropBoxV2Service.js";
 
 class AuthController{
     async registration(req, res, next){
@@ -55,6 +56,17 @@ class AuthController{
             const activationLink = req.params.link;
             await AuthService.activate(activationLink);
             res.redirect('https://ya.ru/');
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async refreshDropboxToken(req, res, next){
+        try {
+            const {code} = req.query;
+            res.sendStatus(200);
+
+            DropBoxV2Service.refreshAccessToken(code);
         } catch (error) {
             next(error);
         }

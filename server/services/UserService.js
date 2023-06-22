@@ -3,8 +3,12 @@ import FavoriteBookModel from "../models/FavoriteBookModel.js";
 import BookService from "./BookService.js";
 import UserModel from "../models/UserModel.js";
 import bcrypt from 'bcrypt';
+import { v4 } from "uuid";
+import DropBoxV2Service from "./DropBoxV2Service.js";
+import stream from 'stream'
 
 class UserService{
+    //получение информации о юзере
     async getUser(id){ 
         const user = await UserModel.findById(id).select('-__v');
 
@@ -14,6 +18,42 @@ class UserService{
         return user;
     }
 
+    //получение лого юзера из Dropbox
+    async getLogo(id){
+        const user = await UserModel.findById(id);
+        if(!user)
+            throw ApiError.BadRequest('Invalid user id');
+
+        const logoName = user.logo;
+        
+        const logoStream = await DropBoxV2Service.getLogo(logoName);
+        
+        return  logoStream;
+    }
+
+    //загрузка лого юзера из Dropbox
+    async uploadLogo(id, file){
+        const user = await UserModel.findById(id);
+        if(!user)
+            throw ApiError.BadRequest('Invalid user id');
+
+        let logoName = user.logo;
+        
+        if(logoName === 'default.jpg')
+        {
+            logoName = v4() + '.jpg';
+            user.logo = logoName;
+            await user.save();
+        }
+        else{
+            await DropBoxV2Service.deleteLogo(logoName);
+        }
+
+        const fileStream = stream.Readable.from(file.buffer);
+        await DropBoxV2Service.uploadLogo(logoName, fileStream);
+    }
+
+    //изменение почты
     async changeEmail(email, userId){
         const user = await UserModel.findById(userId);
 
@@ -29,6 +69,7 @@ class UserService{
         await user.save();
     }
 
+    //изменение никнейма
     async changeUsername(username, userId){
 
         const user = await UserModel.findById(userId);
@@ -45,6 +86,7 @@ class UserService{
         await user.save();
     }
 
+    //изменение пароля
     async changePassword(password, id){
         const user = await UserModel.findById(id);
         if(!user)
@@ -55,6 +97,7 @@ class UserService{
         await user.save();
     }
 
+    //проверка пароля
     async checkPassword(password, id){
         const user = await UserModel.findById(id);
         if(!user)
@@ -66,6 +109,7 @@ class UserService{
             throw ApiError.BadRequest('Invalid password');
     }
 
+    //добавление любимой книги пользователя
     async chooseFavoriteBook(bookId, userId){
         const isFavorite = await FavoriteBookModel.findOne({bookId, userId});
         console.log(isFavorite);
@@ -74,6 +118,7 @@ class UserService{
         await FavoriteBookModel.create({bookId, userId});
     }
 
+    //получение любимых книг пользователя
     async getFavoriteBook(userId){
         const favoriteBooksId = await FavoriteBookModel.find({userId});
         if(!favoriteBooksId)
@@ -91,6 +136,7 @@ class UserService{
         return favoriteBooksInfo
     }
 
+    //удаление любимой книги пользователя
     async deleteFavoriteBook(bookId, userId){
         await FavoriteBookModel.deleteOne({bookId, userId});
     }
