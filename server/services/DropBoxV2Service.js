@@ -12,7 +12,7 @@ class DropBoxV2Service{
             redirect_uri: process.env.DROPBOX_REDIRECT_URI
         })
 
-        open(this.dropbox.generateAuthUrl())
+        // open(this.dropbox.generateAuthUrl())
     }
 
     //получение файла из Dropbox

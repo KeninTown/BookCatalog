@@ -14,6 +14,15 @@ class UserController{
         }
     }
 
+    async getUsers(req, res, next){
+        try {
+            const usersData = await UserService.getUsers();
+            res.status(200).json(usersData);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getLogo(req, res, next){
         try {
             const id = req.params.id;
@@ -95,11 +104,21 @@ class UserController{
             const validResult = validationResult(req);
             if(!validResult.isEmpty())
                 throw ApiError.BadRequest('Validation error', validResult.array())
+            
+            let isResetPassword = false
+            if(req.originalUrl.indexOf('resetPassword'))
+                isResetPassword = true;
+            
+            // console.log(isResetPassword);
+            let identificator;
 
-            const {id} = req.user;
+            if(isResetPassword)
+                identificator = req.body.email;
+            
+            else identificator = req.params.id;
+            
             const {password} = req.body;
-
-            await UserService.changePassword(password, id);
+            await UserService.changePassword(password, identificator, isResetPassword);
 
             res.sendStatus(200);
         } catch (error) {

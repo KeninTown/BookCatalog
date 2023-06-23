@@ -32,6 +32,16 @@ class MailService{
             html: mail
         })
     }
+
+    async sendResetPasswordMail(to, code){
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to,
+            subject: 'Подтвердите аккаунт',
+            text: '',
+            html: `<h1>${code}<h1>`
+        })
+    }
 }
 
 export default new MailService();

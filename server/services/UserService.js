@@ -18,6 +18,11 @@ class UserService{
         return user;
     }
 
+    async getUsers(id){ 
+        const users = await UserModel.find();
+        return users;
+    }
+
     //получение лого юзера из Dropbox
     async getLogo(id){
         const user = await UserModel.findById(id);
@@ -33,6 +38,8 @@ class UserService{
 
     //загрузка лого юзера из Dropbox
     async uploadLogo(id, file){
+        if(file.size > 2097152)
+            throw ApiError.BadRequest('File is too big. File size should me less or equal 2 MB')
         const user = await UserModel.findById(id);
         if(!user)
             throw ApiError.BadRequest('Invalid user id');
@@ -87,10 +94,15 @@ class UserService{
     }
 
     //изменение пароля
-    async changePassword(password, id){
-        const user = await UserModel.findById(id);
+    async changePassword(password, identificator, isResetPassword){
+        let user;
+        // console.log(identificator);
+        if(isResetPassword) 
+            user = await UserModel.findOne({email: identificator});
+        else user = await UserModel.findById(identificator);
+
         if(!user)
-            throw ApiError.BadRequest('No user with such id')
+            throw ApiError.BadRequest('Invalid id')
 
         const hashedPassword = await bcrypt.hash(password, 7);
         user.password = hashedPassword;

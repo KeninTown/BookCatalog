@@ -10,6 +10,9 @@ class CommentService{
         if(!user)
             throw ApiError.BadRequest('No user');
         
+        if(!user.isActivated)
+            throw ApiError.BadRequest('User account is not activated')
+
         await CommentModel.create({userId, bookId, title, text, rating});
     }
 

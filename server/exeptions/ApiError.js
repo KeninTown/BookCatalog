@@ -16,4 +16,8 @@ export default class ApiError extends Error{
     static Unauthorized(){
         return new ApiError(401, 'Unauthorized');
     }
+
+    static Forbidden(message){
+        return new ApiError(403, message);
+    }
 }

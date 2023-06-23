@@ -27,6 +27,10 @@ class BookService{
         return books;
     }
 
+    async createBook(bookInfo){ 
+        await BookModel.create({...bookInfo})
+    }
+
     async getOne(bookId){
         const book = await BookModel.findById(bookId).select('-__v');
         if(!book)

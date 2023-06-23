@@ -61,6 +61,36 @@ class AuthController{
         }
     }
 
+    async sendResetEmail(req, res, next){
+        try {
+            const validResult = validationResult(req);
+            if(!validResult.isEmpty())
+                throw ApiError.BadRequest('Validation error', validResult.array())
+
+            const {email} = req.body;
+            await AuthService.sendResetEmail(email);
+            res.sendStatus(201);
+        } catch (error) {
+          next(error)  
+        }
+    }
+    
+    async compareResetToken(req, res, next){
+        try {
+            const validResult = validationResult(req);
+            if(!validResult.isEmpty())
+                throw ApiError.BadRequest('Validation error', validResult.array())
+
+            const {token} = req.params;
+            const {email} = req.body;
+            await AuthService.compareResetToken(email, token);
+            
+            res.sendStatus(201);
+        } catch (error) {
+          next(error)  
+        }
+    }
+
     async refreshDropboxToken(req, res, next){
         try {
             const {code} = req.query;

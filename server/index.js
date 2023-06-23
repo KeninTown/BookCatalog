@@ -21,6 +21,9 @@ app.use('/api', router);
 
 app.use(errorMiddleware);
 
+app.use((req, res) => {
+    res.sendStatus(404);
+})
 
 const start = async () => {
     try {

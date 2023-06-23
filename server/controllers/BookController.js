@@ -11,6 +11,16 @@ class BookController{
         }
     }
 
+    async createBook(req, res, next){
+        try {
+            const bookInfo = req.body;
+            await BookService.createBook(bookInfo);
+            res.sendStatus(201);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getOneBook(req, res, next){
         try {
             const bookId = req.params.id;

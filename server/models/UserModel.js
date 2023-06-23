@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     username:{type:String, required: true, unique: true},
     password: {type: String, required: true},
     isActivated:{type:Boolean, default:false},
+    roles:[{type: String, ref: 'Role'}],
     activationLink:{type:String},
     logo:{type: String, default: 'default.jpg'}
 });
