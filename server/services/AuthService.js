@@ -6,9 +6,8 @@ import ApiError from '../exeptions/ApiError.js'
 import UserDto from '../dtos/UserDto.js';
 import TokenModel from '../models/TokenModel.js';
 import MailService from './mailService.js';
-import randToken from 'rand-token'
-import ResetTokenModel from '../models/ResetTokenModel.js';
 import RoleModel from '../models/RoleModel.js';
+import UserService from './UserService.js';
 
 class AuthService{
 
@@ -29,7 +28,7 @@ class AuthService{
         const role = await RoleModel.findOne({value: 'User'});
         const user = await UserModel.create({email, username, password:hashedPassword, activationLink, roles: [role.value]});
 
-        await MailService.sendActivateMail(user.email, `${process.env.API_URL}/api/auth/activate/${activationLink}`);
+        await MailService.sendActivateMail(user.email, `${process.env.API_URL}/api/auth/activate/${activationLink}`, username);
         
         const userDto = new UserDto(user);
         const tokens = TokenService.generateToken({...userDto});
@@ -100,29 +99,19 @@ class AuthService{
         if(!user)
             throw ApiError.BadRequest('Invalid email');
         
-        const resetToken = randToken.generate(6, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-        await ResetTokenModel.create({user: user._id, resetToken});
-        console.log(resetToken);
-        //сгенерировать код, записать в юзера и сохранить
+        const resetToken = await TokenService.generateResetToken(user._id);
+
         await MailService.sendResetPasswordMail(email, resetToken);
     }
 
-    async compareResetToken(email, token){
-        const user = await UserModel.findOne({email});
-        if(!user)
-            throw ApiError.BadRequest('Invalid email');
-        
-        const resetToken = ResetTokenModel.findOne({user: user._id, resetToken: token});
-        if(!resetToken)
-            throw ApiError.BadRequest('Invalid reset token');
+    async resetPassword(token, password){
+        const resetToken = await TokenService.validateResetToken(token);
 
-        const currentTime = Date.now();
-        //срок жизни токена 24 часа, проверяем действителен ли токен
-        if(currentTime - resetToken.creationTime > 86400000)
-            throw ApiError.BadRequest('Reset token expired')
-        
-        await ResetTokenModel.deleteOne({user: user._id, resetToken: token});
+        await UserService.changePassword(password, resetToken.userId);
+
+        await TokenService.removeResetToken(resetToken.value);
     }
+    
 }
 
 export default new AuthService();

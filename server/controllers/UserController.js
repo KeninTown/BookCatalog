@@ -105,20 +105,10 @@ class UserController{
             if(!validResult.isEmpty())
                 throw ApiError.BadRequest('Validation error', validResult.array())
             
-            let isResetPassword = false
-            if(req.originalUrl.indexOf('resetPassword'))
-                isResetPassword = true;
-            
-            // console.log(isResetPassword);
-            let identificator;
-
-            if(isResetPassword)
-                identificator = req.body.email;
-            
-            else identificator = req.params.id;
+            const id = req.params.id;
             
             const {password} = req.body;
-            await UserService.changePassword(password, identificator, isResetPassword);
+            await UserService.changePassword(password, id);
 
             res.sendStatus(200);
         } catch (error) {
@@ -128,8 +118,8 @@ class UserController{
 
     async chooseFavoriteBook(req, res, next){
         try {
-            const userId = req.user.id;
-            const {bookId} = req.query;
+            const userId = req.params.id;
+            const {bookId} = req.body;
             await UserService.chooseFavoriteBook(bookId, userId);
             res.sendStatus(201);
         } catch (error) {
@@ -139,8 +129,9 @@ class UserController{
 
     async getFavoriteBook(req, res, next){
         try {
-            const userId = req.user.id;
-            const favoriteBooks = await UserService.getFavoriteBook(userId);
+            const userId = req.params.id;
+            const {limit, page} = req.body;
+            const favoriteBooks = await UserService.getFavoriteBook(limit, page, userId);
             res.status(200).json(favoriteBooks);
         } catch (error) {
             next(error)
@@ -149,7 +140,8 @@ class UserController{
 
     async deleteFavoriteBook(req, res, next){
         try {
-            const {userId, bookId} = req.body;
+            const userId = req.params.id;
+            const {bookId} = req.body;
             await UserService.deleteFavoriteBook(bookId, userId);
             res.sendStatus(204);
         } catch (error) {

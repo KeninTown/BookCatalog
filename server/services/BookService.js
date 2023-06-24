@@ -6,17 +6,28 @@ class BookService{
         this.selectParams = '_id authors img description publisher pageCount title';
     }
 
-    async getBooks(limit, page, genres, author){ 
+    async getBooks(limit, page, genres, author, booksId){ 
         const limitNumber = parseInt(limit, 10) || 10;
         const pageNumber = parseInt(page, 10) || 1;
-
-        const genresArr = genres?.split('-');
-        const authorsArr = author?.split('-');
+        let query = {};
+        if(booksId)
+        {
+            let correctedBooksId = [];
+            booksId.forEach(book => {
+                correctedBooksId.push({_id:book.bookId});
+            })
+            query = {$or:correctedBooksId}
+        }
+        else{
+            const genresArr = genres?.split('-');
+            const authorsArr = author?.split('-');
+            
+            const genreQuery = genresArr ? {genres:{$in: genresArr}} : {};
+            const authorQuery = authorsArr ? {authors:{$in: authorsArr}} : {};
+    
+            query = {$and: [genreQuery, authorQuery]};
+        }
         
-        const genreQuery = genresArr ? {genres:{$in: genresArr}} : {};
-        const authorQuery = authorsArr ? {authors:{$in: authorsArr}} : {};
-
-        const query = {$and: [genreQuery, authorQuery]};
         
         const books = await BookModel.paginate(query, {
             page:pageNumber, 

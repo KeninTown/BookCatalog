@@ -15,10 +15,8 @@ authRouter.get('/activate/:link', AuthController.activate);
 
 //Отправка сообщения с токеном для сброса пароля и проверка токена
 authRouter.post('/resetPassword', body('email').isEmail(), AuthController.sendResetEmail)
-authRouter.post('/resetPassword/:token', body('email').isEmail(), AuthController.compareResetToken)
-
-//Изменение пароля
-authRouter.put('/resetPassword', body('password').isLength({min:6, max: 32}), UserController.changePassword);
+authRouter.put('/resetPassword', body('password').isLength({min:6, max: 32}), 
+AuthController.resetPassword)
 
 //авторизация в Dropbox
 authRouter.get('/dropboxRefreshToken', AuthController.refreshDropboxToken);

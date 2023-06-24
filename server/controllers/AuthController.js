@@ -75,15 +75,18 @@ class AuthController{
         }
     }
     
-    async compareResetToken(req, res, next){
+    async resetPassword(req, res, next){
         try {
             const validResult = validationResult(req);
             if(!validResult.isEmpty())
                 throw ApiError.BadRequest('Validation error', validResult.array())
 
-            const {token} = req.params;
-            const {email} = req.body;
-            await AuthService.compareResetToken(email, token);
+            const {token, password} = req.body;
+
+            if(!token)
+                throw ApiError.BadRequest('Required reset token')
+
+            await AuthService.resetPassword(token, password);
             
             res.sendStatus(201);
         } catch (error) {

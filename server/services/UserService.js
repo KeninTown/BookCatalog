@@ -18,7 +18,7 @@ class UserService{
         return user;
     }
 
-    async getUsers(id){ 
+    async getUsers(){ 
         const users = await UserModel.find();
         return users;
     }
@@ -94,12 +94,8 @@ class UserService{
     }
 
     //изменение пароля
-    async changePassword(password, identificator, isResetPassword){
-        let user;
-        // console.log(identificator);
-        if(isResetPassword) 
-            user = await UserModel.findOne({email: identificator});
-        else user = await UserModel.findById(identificator);
+    async changePassword(password, userId){
+        const user = await UserModel.findById(userId);
 
         if(!user)
             throw ApiError.BadRequest('Invalid id')
@@ -131,21 +127,15 @@ class UserService{
     }
 
     //получение любимых книг пользователя
-    async getFavoriteBook(userId){
-        const favoriteBooksId = await FavoriteBookModel.find({userId});
-        if(!favoriteBooksId)
+    async getFavoriteBook(limit, page, userId){
+        const favoriteBooks = await FavoriteBookModel.find({userId}).select('bookId -_id');
+
+        if(!favoriteBooks)
             throw ApiError.BadRequest('User has not any favorite book');
 
-        console.log(favoriteBooksId);
-        let favoriteBooksInfo = [];
+        const books = await BookService.getBooks(limit, page, null, null, favoriteBooks);
 
-        for(let i = 0; i < favoriteBooksId.length; i++)
-        {
-            const bookInfo = await BookService.getFavoriteBook(favoriteBooksId[i].bookId);
-            favoriteBooksInfo.push(bookInfo);
-        }
-
-        return favoriteBooksInfo
+        return books
     }
 
     //удаление любимой книги пользователя
