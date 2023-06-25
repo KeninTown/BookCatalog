@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer'
 import fs from 'fs'
 import * as path from 'path';
 import dotenv from 'dotenv'
-dotenv.config();
+dotenv.config()
 
 class MailService{
     //создание транспорта для отправки сообщений
@@ -22,8 +22,8 @@ class MailService{
     async sendActivateMail(to, link, username){
         let mail = fs.readFileSync(path.resolve('static', 'activateAccountMessage.html'), 'utf-8');
 
-        mail = mail.replace('activationLink', `${link}`);
-        // mail = mail.replace('username', `${username}`);
+        mail = mail.replace('activationLink', link);
+        mail = mail.replace('username', `${username}`);
 
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
@@ -42,7 +42,7 @@ class MailService{
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
             to,
-            subject: 'Подтвердите аккаунт',
+            subject: 'Код для сброса пароля',
             text: '',
             html: mail
         })

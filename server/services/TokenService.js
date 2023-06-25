@@ -4,7 +4,7 @@ import randToken from 'rand-token'
 import ResetTokenModel from '../models/ResetTokenModel.js';
 import ApiError from "../exeptions/ApiError.js";
 import dotenv from 'dotenv'
-dotenv.config();
+dotenv.config()
 
 class TokenService{
 

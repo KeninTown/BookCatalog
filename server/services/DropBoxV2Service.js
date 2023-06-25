@@ -1,9 +1,9 @@
 import dropboxV2Api from 'dropbox-v2-api';
-import open from 'open';
+import dotenv from 'dotenv'
+dotenv.config()
 
 class DropBoxV2Service{
     constructor(){
-        //Код правильный!
         //Создание объекта dropbox с данными для подключения
         this.dropbox = dropboxV2Api.authenticate({
             client_id: process.env.DROPBOX_CLIENT_ID,
@@ -12,7 +12,13 @@ class DropBoxV2Service{
             redirect_uri: process.env.DROPBOX_REDIRECT_URI
         })
 
-        // open(this.dropbox.generateAuthUrl())
+        // получение access token для доступа к Dropbox
+        this.getAccessToken();
+        
+        //обновление access token каждые 3,5 часа
+        setInterval(() => {
+            this.getAccessToken()
+        }, 12600000)
     }
 
     //получение файла из Dropbox
@@ -43,18 +49,11 @@ class DropBoxV2Service{
         })
     }
 
-    async refreshAccessToken(code){
-        this.dropbox.getToken(code, (err, response) => {
+    async getAccessToken(){ 
+        this.dropbox.refreshToken(process.env.DROPBOX_REFRESH_TOKEN, (err, result) => {
             console.log(err);
-            console.log('user\'s access_token: ', response.access_token);
-            console.log('user\'s refresh_token: ', response.refresh_token);
-            setInterval(() => {
-                this.dropbox.refreshToken(response.refresh_token, (err, result) => {
-                    console.log(err);
-                    console.log(result);
-                })
-            }, 12600000)
-        });
+            console.log(result);
+        })
     }
 }
 
