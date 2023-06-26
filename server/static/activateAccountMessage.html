@@ -12,26 +12,24 @@
         .pageContainer {
             width: 1000px;
             height: 500px;
-            /* margin: auto; */
+            margin: auto;
             background-color: #F3DFC1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
         }
 
         .pageContainer__img {
             width: 300px;
             height: 71px;
             padding: 20px 0;
+            margin-left: 330px;
         }
 
         .pageContainer__textContainer {
             width: 686px;
-            height: 347px;
+            height: 300px;
             margin-bottom: 40px;
             padding: 20px;
             background-color: white;
+            margin-left: 130px;
         }
 
         .title {
@@ -70,9 +68,16 @@
         }
 
         .pageContainer__textContainer__buttonContainer {
-            display: flex;
-            justify-content: center;
+            width: 100%;
+            text-align: center;
         }
+
+        .pageContainer__textContainer__button:hover {
+            background-color: #160F29;
+            color: white;
+            cursor: pointer;
+        }
+        
     </style>
 </head>
 
@@ -84,7 +89,7 @@
             <div class="descriptionOne">Благодарим за регистрацию в нашем книжном каталоге. <br> Мы очень рады, что вы присоединились к
                 нашему сообществу <br> любителей книг!</div>
             <div class="descriptionTwo">Для завершения регистрации нажмите на кнопку ниже</div>
-            <div class="pageContainer__textContainer__buttonContainer"><a href="activationLink">Завершить регистрацию</a></div>
+            <div class="pageContainer__textContainer__buttonContainer"><a href="activationLink"><button class="pageContainer__textContainer__button">Завершить регистрацию</button></a></div>
         </div>
     </div>
 </body>

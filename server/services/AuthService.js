@@ -5,7 +5,7 @@ import UserModel from '../models/UserModel.js';
 import ApiError from '../exeptions/ApiError.js'
 import UserDto from '../dtos/UserDto.js';
 import TokenModel from '../models/TokenModel.js';
-import MailService from './mailService.js';
+import MailService from './MailService.js';
 import RoleModel from '../models/RoleModel.js';
 import UserService from './UserService.js';
 
