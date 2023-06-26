@@ -60,6 +60,19 @@ class UserService{
         await DropBoxV2Service.uploadLogo(logoName, fileStream);
     }
 
+    async deleteLogo(id){
+        const user = await UserModel.findById(id)
+
+        if(!user)
+            throw ApiError.BadRequest('Invalid user id');
+
+        await DropBoxV2Service.deleteLogo(user.logo);
+
+        user.logo = 'default.jpg'
+
+        await user.save();
+    }
+
     //изменение почты
     async changeEmail(email, userId){
         const user = await UserModel.findById(userId);

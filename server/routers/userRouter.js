@@ -21,6 +21,7 @@ router.get('/:id', UserController.getUser)
 //логотип пользователя
 router.get('/:id/logo', UserController.getLogo);
 router.put('/:id/logo', upload.single('logo'), UserController.uploadLogo);
+router.delete('/:id/logo', UserController.deleteLogo);
 
 //комментарии пользователя
 router.get('/:id/comments', CommentController.getByUserId);

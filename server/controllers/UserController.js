@@ -48,6 +48,18 @@ class UserController{
         }
     }
 
+    async deleteLogo(req, res, next){
+        try {
+            const id = req.params.id;
+
+            await UserService.deleteLogo(id);
+            
+            res.sendStatus(200);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async changeEmail(req, res, next){
         try {
             const validResult = validationResult(req);
