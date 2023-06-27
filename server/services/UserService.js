@@ -13,7 +13,7 @@ class UserService{
         const user = await UserModel.findById(id).select('-__v');
 
         if(!user)
-            throw ApiError.BadRequest('No user with such id');
+            throw ApiError.BadRequest('Invalid user id');
         
         return user;
     }
@@ -78,7 +78,7 @@ class UserService{
         const user = await UserModel.findById(userId);
 
         if(!user)
-            throw ApiError.BadRequest('No user with such id');
+            throw ApiError.BadRequest('Invalid user id');
         
         const existUser = await UserModel.findOne({email});
         if(existUser)
@@ -95,7 +95,7 @@ class UserService{
         const user = await UserModel.findById(userId);
 
         if(!user)
-            throw ApiError.BadRequest('No user with such id');
+            throw ApiError.BadRequest('Invalid user id');
         
         const existUser = await UserModel.findOne({username});
         if(existUser)
@@ -111,7 +111,7 @@ class UserService{
         const user = await UserModel.findById(userId);
 
         if(!user)
-            throw ApiError.BadRequest('Invalid id')
+            throw ApiError.BadRequest('Invalid user id')
 
         const hashedPassword = await bcrypt.hash(password, 7);
         user.password = hashedPassword;
@@ -122,7 +122,7 @@ class UserService{
     async checkPassword(password, id){
         const user = await UserModel.findById(id);
         if(!user)
-            throw ApiError.BadRequest('No user with such id')
+            throw ApiError.BadRequest('Invalid user id')
         
         const isPasswordMatch = await bcrypt.compare(password, user.password);
 

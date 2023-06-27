@@ -8,10 +8,10 @@ class CommentService{
     async create(userId, bookId, title, text, rating){
         const user = await UserModel.findById(userId);
         if(!user)
-            throw ApiError.BadRequest('No user');
+            throw ApiError.BadRequest('Invalid user id');
         
         if(!user.isActivated)
-            throw ApiError.BadRequest('User account is not activated')
+            throw ApiError.Forbidden('User account is not activated')
 
         await CommentModel.create({userId, bookId, title, text, rating});
     }

@@ -89,7 +89,7 @@ class AuthService{
     async activate(link){
         const user = await UserModel.findOne({activationLink: link});
         if(!user)
-            throw ApiError.BadRequest('Wrong activation link');
+            throw ApiError.BadRequest('Invalid activation link');
         user.isActivated = true;
         await user.save();
     }
