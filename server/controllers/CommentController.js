@@ -23,11 +23,12 @@ class CommentController{
 
     async create(req, res, next){
         try {
+            console.log("a")
             const bookId = req.params.id;
             const {title, text, rating} = req.body;
             const id = req.user.id;
             await CommentService.create(id, bookId, title, text, rating);
-            return res.status(201).end();
+            res.status(201).end();
         } catch (error) {
             next(error)
         }   

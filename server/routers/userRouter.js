@@ -13,7 +13,7 @@ const router = new Router();
 router.get('/', authMiddleware(['Admin']), UserController.getUsers);
 
 //проверка на авторизацию
-router.use('/:id', authMiddleware(['User']));
+router.use('/:id', authMiddleware(['User', 'Admin']));
 
 //информация о пользователе
 router.get('/:id', UserController.getUser)
