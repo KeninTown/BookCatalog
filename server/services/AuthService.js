@@ -70,7 +70,7 @@ class AuthService{
             throw ApiError.Unauthorized();
 
         const tokenData = TokenService.validateRefreshToken(refreshToken);
-        const tokenDB = TokenModel.findOne({refreshToken});
+        const tokenDB = await TokenModel.findOne({refreshToken});
 
         if(!tokenData || !tokenDB)
             throw ApiError.Unauthorized();

@@ -23,7 +23,6 @@ class CommentController{
 
     async create(req, res, next){
         try {
-            console.log("a")
             const bookId = req.params.id;
             const {title, text, rating} = req.body;
             const id = req.user.id;
