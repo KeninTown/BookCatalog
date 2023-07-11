@@ -6,28 +6,38 @@ class BookService{
         this.selectParams = '_id authors img description publisher pageCount title';
     }
 
-    async getBooks(limit, page, genres, author, booksId){ 
+    async getBooks(limit, page, genres, author, booksId, text){ 
         const limitNumber = parseInt(limit, 10) || 10;
         const pageNumber = parseInt(page, 10) || 1;
         let query = {};
-        if(booksId)
-        {
-            let correctedBooksId = [];
-            booksId.forEach(book => {
-                correctedBooksId.push({_id:book.bookId});
-            })
-            query = {$or:correctedBooksId}
+        if(text){
+            const regexText = new RegExp(text, "gi")
+            query = {$or:[
+                {title: {$regex : regexText}},
+                {authors: {$regex : regexText}},
+                {genres: {$regex : regexText}},
+                {publisher: {$regex : regexText}}
+            ]}
         }
         else{
-            const genresArr = genres?.split('-');
-            const authorsArr = author?.split('-');
-            
-            const genreQuery = genresArr ? {genres:{$in: genresArr}} : {};
-            const authorQuery = authorsArr ? {authors:{$in: authorsArr}} : {};
-    
-            query = {$and: [genreQuery, authorQuery]};
-        }
+            if(booksId)
+            {
+                let correctedBooksId = [];
+                booksId.forEach(book => {
+                    correctedBooksId.push({_id:book.bookId});
+                })
+                query = {$or:correctedBooksId}
+            }
+            else{
+                const genresArr = genres?.split('-');
+                const authorsArr = author?.split('-');
+                
+                const genreQuery = genresArr ? {genres:{$in: genresArr}} : {};
+                const authorQuery = authorsArr ? {authors:{$in: authorsArr}} : {};
         
+                query = {$and: [genreQuery, authorQuery]};
+            }
+        }
         
         const books = await BookModel.paginate(query, {
             page:pageNumber, 
